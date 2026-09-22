@@ -2,12 +2,14 @@ import { useState, useEffect, useMemo, useCallback, memo } from "react";
 import "./App.css";
 import minionImage from './assets/minion.jpg';
 
-const MAX_FLOWERS = 30;
-const GROWTH_INTERVAL = 1500;
-const BRANCH_VARIATION = 0.3;
+const MAX_FLOWERS = 24; // Reducimos un poco el total para que no se sature de más
+const GROWTH_INTERVAL = 1200;
+const BRANCH_VARIATION = 0.2;
+
+// CAMBIO CLAVE: Ángulos más cerrados para que crezca hacia arriba como un ramo real
 const INITIAL_FLOWERS = [
-  { id: 1, angle: -60, distance: 0.1, parent: null, level: 0 },
-  { id: 2, angle: 60, distance: 0.1, parent: null, level: 0 },
+  { id: 1, angle: -30, distance: 0.08, parent: null, level: 0 },
+  { id: 2, angle: 30, distance: 0.08, parent: null, level: 0 },
 ];
 
 const naturalVariation = (base, variation) =>
@@ -67,19 +69,22 @@ const TypewriterText = ({ text }) => {
 const Flower = memo(({ level, delay, angle, distance, parentAngle = 0, parentDistance = 0 }) => {
   const { position, stemLength, stemAngle } = useMemo(() => {
     const baseSize = Math.min(window.innerWidth, window.innerHeight);
-    const fanSpread = 0.6;
+    
+    // REDUCIMOS la dispersión y enfocamos el ramo hacia arriba (-90 grados es vertical hacia arriba)
+    const spreadFactor = 0.45; 
 
     const variedAngle = naturalVariation(angle, BRANCH_VARIATION);
     const variedDistance = naturalVariation(distance, BRANCH_VARIATION);
 
+    // Posición centrada y apuntando hacia arriba
     const position = {
-      x: baseSize * fanSpread * Math.cos((variedAngle * Math.PI) / 180),
-      y: baseSize * fanSpread * Math.sin((variedAngle * Math.PI) / 180) * 0.4
+      x: baseSize * spreadFactor * Math.cos(((variedAngle - 90) * Math.PI) / 180),
+      y: baseSize * spreadFactor * Math.sin(((variedAngle - 90) * Math.PI) / 180) * 0.8
     };
 
     const parentPosition = {
-      x: parentDistance * baseSize * Math.cos((parentAngle * Math.PI) / 180),
-      y: parentDistance * baseSize * Math.sin((parentAngle * Math.PI) / 180)
+      x: parentDistance * baseSize * Math.cos(((parentAngle - 90) * Math.PI) / 180),
+      y: parentDistance * baseSize * Math.sin(((parentAngle - 90) * Math.PI) / 180) * 0.8
     };
 
     const stemLength = Math.hypot(
@@ -87,7 +92,6 @@ const Flower = memo(({ level, delay, angle, distance, parentAngle = 0, parentDis
       position.y - parentPosition.y
     );
 
-    // Tallo apuntando correctamente hacia el centro/padre
     const stemAngle = Math.atan2(
       parentPosition.y - position.y,
       parentPosition.x - position.x
@@ -168,7 +172,7 @@ const Flower = memo(({ level, delay, angle, distance, parentAngle = 0, parentDis
   );
 });
 
-// ========== COMPONENTE RAMO ==========
+// ========== COMPONENTE RAMO ORDENADO ==========
 const Bouquet = () => {
   const [flowers, setFlowers] = useState(INITIAL_FLOWERS);
   
@@ -186,13 +190,14 @@ const Bouquet = () => {
 
       const newFlowers = prev.flatMap((flower) => {
         if (flower.level < 3) {
-          const angleStep = naturalVariation(120 / (flower.level + 2), 0.2);
+          // Ángulos controlados para mantener forma de ramo y no dispersarse en círculo
+          const angleStep = naturalVariation(35, 0.2); 
           return [1, -1].map(direction => {
             currentMaxId++;
             return {
               id: currentMaxId,
               angle: flower.angle + angleStep * direction,
-              distance: naturalVariation(flower.distance + 0.15, 0.1),
+              distance: naturalVariation(flower.distance + 0.12, 0.1),
               parent: flower.id,
               level: flower.level + 1,
             };
@@ -235,16 +240,12 @@ const App = () => {
 
   const handleButtonClick = () => {
     if (!isImageVisible) {
-      // 1. El Minion aparece de inmediato
       setIsImageVisible(true);
-      
-      // 2. Esperamos 0.8s para que las flores y el texto broten de sus manos
       setTimeout(() => {
         setShowBouquet(true);
         setIsTextVisible(true);
       }, 800); 
     } else {
-      // Si se cierra la sorpresa, ocultamos todo
       setIsImageVisible(false);
       setShowBouquet(false);
       setIsTextVisible(false);
@@ -265,14 +266,13 @@ const App = () => {
         {showBouquet ? "Cierra la sorpresa." : "¡Haz clic aquí para abrir tu sorpresa!"}
       </button>
 
-      {/* Imagen del Minion sosteniendo las flores */}
+      {/* Imagen del Minion */}
       <img
         src={minionImage}
         alt="Minion sosteniendo flores"
         className={`minion-holding ${isImageVisible ? 'visible' : ''}`}
       />
 
-      {/* Las flores brotan con retraso */}
       {showBouquet && <Bouquet />}
 
       <div className={`bottom-right-text ${isTextVisible ? 'visible' : ''}`}>
