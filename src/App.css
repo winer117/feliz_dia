@@ -42,7 +42,7 @@
 }
 
 /* =========================================
-   BOUQUET (FLORES POR ENCIMA - z-index: 5)
+   BOUQUET (RAMO DE FLORES)
    ========================================= */
 .bouquet {
   position: fixed;
@@ -58,7 +58,7 @@
 .bouquet::before {
   content: '';
   position: absolute;
-  top: 50%;
+  top: 45%; /* Subido ligeramente para dar espacio */
   left: 50%;
   width: 30px;
   height: 30px;
@@ -78,7 +78,7 @@
 /* TALLOS (STEMS) */
 .stem {
   position: absolute;
-  top: 50%;
+  top: 45%; /* Ajustado al centro del ramo */
   left: 50%;
   width: var(--stem-thickness, 4px);
   background: linear-gradient(to bottom, #2d5a27 0%, #386330 25%, #427039 50%, #3d6b35 75%, #315a2b 100%);
@@ -188,7 +188,7 @@
 
 .flower {
   position: absolute;
-  top: 50%;
+  top: 45%; /* Ajustado al centro del ramo */
   left: 50%;
   opacity: 0;
   animation: grow 1.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
@@ -471,18 +471,19 @@ h1{
 }
 
 /* =========================================
-   MINION (DETRÁS DE LAS FLORES - z-index: 1)
+   MINION (BAJADO UN POCO MÁS - translate 15%)
    ========================================= */
 .minion-holding {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -10%) scale(0.5);
+  /* Bajado de -10% a 15% para que quede más abajo y despeje el centro */
+  transform: translate(-50%, 15%) scale(0.5);
   width: 220px;
   height: auto;
   border-radius: 10px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-  z-index: 1; /* Quedará por debajo para que las flores salgan de sus manos */
+  z-index: 1; 
   opacity: 0;
   transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   pointer-events: none;
@@ -490,5 +491,5 @@ h1{
 
 .minion-holding.visible {
   opacity: 1;
-  transform: translate(-50%, -10%) scale(1);
+  transform: translate(-50%, 15%) scale(1);
 }
