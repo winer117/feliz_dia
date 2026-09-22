@@ -42,7 +42,7 @@
 }
 
 /* =========================================
-   BOUQUET (RAMO DE FLORES - ORIGEN EN LAS MANOS)
+   BOUQUET (RAMO MÁS ARRIBA)
    ========================================= */
 .bouquet {
   position: fixed;
@@ -58,7 +58,7 @@
 .bouquet::before {
   content: '';
   position: absolute;
-  top: 62%; /* Alineado perfectamente con las manos del Minion */
+  top: 52%; /* Subido más arriba para que el ramo luzca alto y elegante */
   left: 50%;
   width: 25px;
   height: 25px;
@@ -78,7 +78,7 @@
 /* TALLOS (STEMS) */
 .stem {
   position: absolute;
-  top: 62%; /* Coincide con el centro del ramo en las manos */
+  top: 52%; /* Sincronizado con la nueva altura */
   left: 50%;
   width: var(--stem-thickness, 4px);
   background: linear-gradient(to bottom, #2d5a27 0%, #386330 25%, #427039 50%, #3d6b35 75%, #315a2b 100%);
@@ -188,7 +188,7 @@
 
 .flower {
   position: absolute;
-  top: 62%; /* Coincide con el origen en las manos */
+  top: 52%; /* Sincronizado con la nueva altura */
   left: 50%;
   opacity: 0;
   animation: grow 1.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
@@ -471,7 +471,7 @@ h1{
 }
 
 /* =========================================
-   MINION (POSICIONADO ABAJO)
+   MINION
    ========================================= */
 .minion-holding {
   position: fixed;
