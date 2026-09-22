@@ -15,7 +15,7 @@ const naturalVariation = (base, variation) =>
 
 const leafPositions = [0.25, 0.5, 0.75, 1];
 
-// ========== CINTAS DORADAS FLOTANTES ==========
+// ========== CINTAS DORADAS FLOTANTES 3D ==========
 const FloatingRibbons = memo(() => {
   const ribbons = useMemo(() => [...Array(25)].map((_, i) => ({
     id: i,
@@ -45,7 +45,7 @@ const FloatingRibbons = memo(() => {
   );
 });
 
-// ========== MÁQUINA DE ESCRIBIR ==========
+// ========== EFECTO MÁQUINA DE ESCRIBIR ==========
 const TypewriterText = ({ text }) => {
   const [displayText, setDisplayText] = useState('');
   
@@ -63,7 +63,7 @@ const TypewriterText = ({ text }) => {
   return <span>{displayText}</span>;
 };
 
-// ========== COMPONENTE FLOR ==========
+// ========== COMPONENTE FLOR Y TALLO ==========
 const Flower = memo(({ level, delay, angle, distance, parentAngle = 0, parentDistance = 0 }) => {
   const { position, stemLength, stemAngle } = useMemo(() => {
     const baseSize = Math.min(window.innerWidth, window.innerHeight);
@@ -87,10 +87,11 @@ const Flower = memo(({ level, delay, angle, distance, parentAngle = 0, parentDis
       position.y - parentPosition.y
     );
 
+    // Tallo apuntando correctamente hacia el centro/padre
     const stemAngle = Math.atan2(
-      position.y - parentPosition.y,
-      position.x - parentPosition.x
-    ) * (180 / Math.PI) - 45;
+      parentPosition.y - position.y,
+      parentPosition.x - position.x
+    ) * (180 / Math.PI) - 90;
 
     return { position, stemLength, stemAngle };
   }, [angle, distance, parentAngle, parentDistance]);
@@ -233,9 +234,21 @@ const App = () => {
   const [isTextVisible, setIsTextVisible] = useState(false);
 
   const handleButtonClick = () => {
-    setShowBouquet(!showBouquet);
-    setIsImageVisible(true);
-    setIsTextVisible(true);
+    if (!isImageVisible) {
+      // 1. El Minion aparece de inmediato
+      setIsImageVisible(true);
+      
+      // 2. Esperamos 0.8s para que las flores y el texto broten de sus manos
+      setTimeout(() => {
+        setShowBouquet(true);
+        setIsTextVisible(true);
+      }, 800); 
+    } else {
+      // Si se cierra la sorpresa, ocultamos todo
+      setIsImageVisible(false);
+      setShowBouquet(false);
+      setIsTextVisible(false);
+    }
   };
 
   return (
@@ -247,19 +260,20 @@ const App = () => {
       <button
         onClick={handleButtonClick}
         className="magic-button"
-        aria-label={showBouquet ? "Cerrar abanico" : "Abrir abanico"}
+        aria-label={showBouquet ? "Cerrar sorpresa" : "Abrir sorpresa"}
       >
         {showBouquet ? "Cierra la sorpresa." : "¡Haz clic aquí para abrir tu sorpresa!"}
       </button>
 
-      {showBouquet && <Bouquet />}
-
-      {/* Imagen renderizada con la clase CSS corregida */}
+      {/* Imagen del Minion sosteniendo las flores */}
       <img
         src={minionImage}
-        alt="Sorpresa especial"
-        className={`bottom-left-image ${isImageVisible ? 'visible' : ''}`}
+        alt="Minion sosteniendo flores"
+        className={`minion-holding ${isImageVisible ? 'visible' : ''}`}
       />
+
+      {/* Las flores brotan con retraso */}
+      {showBouquet && <Bouquet />}
 
       <div className={`bottom-right-text ${isTextVisible ? 'visible' : ''}`}>
         {isTextVisible && <TypewriterText text="Con cariño, Mario" />}
